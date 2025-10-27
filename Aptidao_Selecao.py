@@ -36,5 +36,3 @@ def selecaoRoleta(aptidoes, populacao):
             indice = aptidoes.index(aptidao)
             selecionado = populacao[indice]
             return selecionado
-    
-        
