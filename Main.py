@@ -10,7 +10,7 @@ taxa_cruzamento = 0.65
 intervalo_min = -100
 intervalo_max = 100
 
-BITS = 22
+BITS = 44
 
 def main():
     populacao = []
@@ -72,6 +72,7 @@ def main():
             valorX, valorY = FuncaoBinaria.decodificaCromossoma(valorX, valorY, BITS//2, intervalo_min, intervalo_max)
             resultado = FuncaoAvalicao.funcaoAvaliacao(valorX, valorY)
             resultados.append(resultado)
+            #print(f"Cromossoma: {cromossoma}, ({valorX},{valorY}) => Resultado: {resultado}")
             if resultado > melhor_resultado:
                 melhor_resultado = resultado
                 melhor_cromossoma = cromossoma
@@ -80,12 +81,13 @@ def main():
             if resultado == 1:
                 print("Solução encontrada!")
                 print(f"Cromossoma: {cromossoma}, ({valorX},{valorY})")
-                return
 
         print(f"Melhor da geracao {count - 1}: Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
 
         # prepara próxima geração
         populacao = nova_populacao
+    print(f"\nEvolucao concluida. Melhor solucao encontrada:")
+    print(f"Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
         
     return
         
