@@ -3,72 +3,105 @@ import random
 import Aptidao_Selecao
 import Cruzamento_Mutacao
 import FuncaoAvalicao
+import matplotlib.pyplot as plt
 
 N = 100
 Num_ger = 40
-taxa_cruzamento = 0.65
 
-BITS = 22
+taxa_cruzamento = 0.65
+intervalo_min = -100
+intervalo_max = 100
+
+BITS = 44
 
 def main():
-    
     populacao = []
-    geracao = [0] * Num_ger
     count = 1
-    resultados = []
-    selecionados = []
-    nova_populacao = []
-    vetorX = [random.randint(-100, 100) for i in range(N)]
-    vetorY = [random.randint(-100, 100) for i in range(N)]
-    
+    melhor_cromossoma = None
+    melhor_resultado = 0.0
+    melhorX = 0.0
+    melhorY = 0.0
+    melhores_resultados = []
+
+    # cria população inicial
     for i in range(N):
-        cromossoma = FuncaoBinaria.criaCromossoma(vetorX[i], BITS, vetorY[i])
+        cromossoma = ''.join(str(random.randint(0, 1)) for _ in range(BITS))
         populacao.append(cromossoma)
-    
-    for geracao in range(Num_ger):   
-        for i in range(N):  #realizo o calculo de aptidão e gero a roleta
-            cromossoma = Aptidao_Selecao.selecaoRoleta(Aptidao_Selecao.avaliaPopulacao(populacao, BITS), populacao)
-            #print("Cromossoma selecionado:", cromossoma)   Para ver os cromossomas selecionados na roleta
-            selecionados.append(cromossoma) 
-        i = 0
+
+    for _ in range(Num_ger): #avalia a população
+        
+        aptidoes = Aptidao_Selecao.avaliaPopulacao(populacao, BITS)
+
+        selecionados = []
+        resultados = []
+
+        # seleção por roleta
+        for i in range(N):
+            cromossoma = Aptidao_Selecao.selecaoRoleta(aptidoes, populacao)
+            selecionados.append(cromossoma)
+
+        #cromossoma mais frequente entre os selecionados
         melhorPai = max(selecionados, key=selecionados.count)
-        #print("melhor pai:", melhorPai)
-        for i in range(0, N, 2): # realizo o cruzamento e a mutação
+
+        nova_populacao = []
+        
+        # cruzamento e mutação 
+        for i in range(0, N, 2):
+            pai1 = selecionados[i]
+            pai2 = selecionados[i + 1]
             if random.random() < taxa_cruzamento:
-                filho1, filho2 = Cruzamento_Mutacao.Crossover(selecionados[i], selecionados[i + 1])
-                #print(f"Filho {i} antes da mutação: {filho1}")  # Para ver o filho 1 antes da mutação
-                #print(f"Filho {i + 1} antes da mutação: {filho2}")  # Para ver o filho 2 antes da mutação
-                Cruzamento_Mutacao.Mutacao(filho1)
-                Cruzamento_Mutacao.Mutacao(filho2)
+                filho1, filho2 = Cruzamento_Mutacao.Crossover(pai1, pai2)
+                filho1 = Cruzamento_Mutacao.Mutacao(filho1)
+                filho2 = Cruzamento_Mutacao.Mutacao(filho2)
                 nova_populacao.append(filho1)
                 nova_populacao.append(filho2)
             else:
-                Cruzamento_Mutacao.Mutacao(selecionados[i])
-                Cruzamento_Mutacao.Mutacao(selecionados[i + 1])
-                nova_populacao.append(selecionados[i])
-                nova_populacao.append(selecionados[i + 1])
-            
-        nova_populacao[0] = melhorPai  # Elitismo: mantém o melhor pai na nova população
-        geracao = nova_populacao #salvo a populacao da geração atual
-        print(f"Geração {count} concluída.")
+        
+                filho1 = Cruzamento_Mutacao.Mutacao(pai1)
+                filho2 = Cruzamento_Mutacao.Mutacao(pai2)
+                nova_populacao.append(filho1)
+                nova_populacao.append(filho2)
+
+        #elitismo
+        if len(nova_populacao) > 0:
+            nova_populacao[0] = melhorPai
+
+        print(f"Geracao {count} concluida.")
         count += 1
-                
+
+        #avalia a nova população e atualiza o melhor cromossoma
         for cromossoma in nova_populacao:
             valorX, valorY = FuncaoBinaria.separaCromossoma(cromossoma, BITS)
+            valorX, valorY = FuncaoBinaria.decodificaCromossoma(valorX, valorY, BITS//2, intervalo_min, intervalo_max)
             resultado = FuncaoAvalicao.funcaoAvaliacao(valorX, valorY)
             resultados.append(resultado)
-            print(f"Cromossoma: {cromossoma}, ({valorX},{valorY}), Resultado: {resultado}")
+            #print(f"Cromossoma: {cromossoma}, ({valorX},{valorY}) => Resultado: {resultado}")
+            if resultado > melhor_resultado:
+                melhor_resultado = resultado
+                melhor_cromossoma = cromossoma
+                melhorX = valorX
+                melhorY = valorY
             if resultado == 1:
                 print("Solução encontrada!")
-                return
-        populacao.clear()
-        nova_populacao.clear()
-        selecionados.clear()
-        populacao = geracao
-        resultados.clear()
+                print(f"Cromossoma: {cromossoma}, ({valorX},{valorY})")
+
+        print(f"Melhor da geracao {count - 1}: Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
+        melhores_resultados.append(melhor_resultado)
+        
+        # prepara próxima geração
+        populacao = nova_populacao
+    print(f"\nEvolucao concluida. Melhor solucao encontrada:")
+    print(f"Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
+    
+    plt.style.use('seaborn-v0_8')
+    plt.plot(melhores_resultados, marker='o', label='Melhor Resultado por Geração')
+    plt.title('Algoritmo Genético - Evolução do Melhor Resultado')
+    plt.xlabel('Geração')
+    plt.ylabel('Resultado')
+    plt.legend()
+    plt.show()
         
     return
         
 if __name__ == "__main__":
     main()
-    
