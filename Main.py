@@ -3,9 +3,11 @@ import random
 import Aptidao_Selecao
 import Cruzamento_Mutacao
 import FuncaoAvalicao
+import matplotlib.pyplot as plt
 
 N = 100
 Num_ger = 40
+
 taxa_cruzamento = 0.65
 intervalo_min = -100
 intervalo_max = 100
@@ -19,6 +21,7 @@ def main():
     melhor_resultado = 0.0
     melhorX = 0.0
     melhorY = 0.0
+    melhores_resultados = []
 
     # cria população inicial
     for i in range(N):
@@ -83,11 +86,20 @@ def main():
                 print(f"Cromossoma: {cromossoma}, ({valorX},{valorY})")
 
         print(f"Melhor da geracao {count - 1}: Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
-
+        melhores_resultados.append(melhor_resultado)
+        
         # prepara próxima geração
         populacao = nova_populacao
     print(f"\nEvolucao concluida. Melhor solucao encontrada:")
     print(f"Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
+    
+    plt.style.use('seaborn-v0_8')
+    plt.plot(melhores_resultados, marker='o', label='Melhor Resultado por Geração')
+    plt.title('Algoritmo Genético - Evolução do Melhor Resultado')
+    plt.xlabel('Geração')
+    plt.ylabel('Resultado')
+    plt.legend()
+    plt.show()
         
     return
         
