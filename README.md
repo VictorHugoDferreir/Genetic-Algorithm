@@ -2,7 +2,7 @@
 
 ## 🚀 Algoritmo Genético para Maximização da Função $F(6)$
 
-Este projeto implementa um Algoritmo Genético (AG) em Python para encontrar o máximo global da complexa função binária $F_6$. O AG foi cuidadosamente configurado com técnicas clássicas e eficientes para garantir uma convergência robusta e resultados precisos.
+Este projeto implementa um Algoritmo Genético (AG) em Python para encontrar o máximo global da complexa função real $F_6$. O AG foi cuidadosamente configurado com técnicas clássicas e eficientes para garantir uma convergência robusta e resultados precisos.
 
 ### 🎯 Objetivo
 
@@ -43,3 +43,4 @@ O AG foi estruturado em módulos claros de População, Avaliação e Reproduç�
 Ao final da execução, espera-se que o algoritmo tenha convergido para um indivíduo cuja avaliação $F_6(x, y)$ esteja próxima do máximo global teórico da função.
 
 * **Output:** O programa deve exibir o indivíduo de maior aptidão (Elite) encontrado a cada geração, incluindo seus valores decodificados de $x$ e $y$, e o valor de $F_6$ alcançado.
+
