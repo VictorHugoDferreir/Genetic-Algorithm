@@ -35,3 +35,10 @@ def selecaoRoleta(aptidoes, populacao):
         somatorio += aptidao
         if somatorio >= selecao:
             return populacao[i]
+
+
+def selecaoTorneio(populacao, aptidoes, k=3):
+    # seleciona k indivíduos aleatórios e retorna o melhor entre eles
+    candidatos_idx = random.sample(range(len(populacao)), k)
+    melhor_idx = max(candidatos_idx, key=lambda i: aptidoes[i])
+    return populacao[melhor_idx]

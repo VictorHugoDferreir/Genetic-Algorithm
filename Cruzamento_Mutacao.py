@@ -1,7 +1,7 @@
 import Main
 import random
 
-taxa_mutacao = 0.008
+taxa_mutacao = 0.5
 
 def Crossover(cromossoma1, cromossoma2):
     

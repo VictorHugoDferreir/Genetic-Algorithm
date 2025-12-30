@@ -6,9 +6,9 @@ import FuncaoAvalicao
 import matplotlib.pyplot as plt
 
 N = 100
-Num_ger = 40
+Num_ger = 100
 
-taxa_cruzamento = 0.65
+taxa_cruzamento = 0.7
 intervalo_min = -100
 intervalo_max = 100
 
@@ -29,19 +29,22 @@ def main():
         populacao.append(cromossoma)
 
     for _ in range(Num_ger): #avalia a população
+        found_solution = False
         
         aptidoes = Aptidao_Selecao.avaliaPopulacao(populacao, BITS)
 
         selecionados = []
         resultados = []
 
-        # seleção por roleta
+        # seleção por torneio (mais robusta que roleta)
         for i in range(N):
-            cromossoma = Aptidao_Selecao.selecaoRoleta(aptidoes, populacao)
+            cromossoma = Aptidao_Selecao.selecaoTorneio(populacao, aptidoes, k=3)
             selecionados.append(cromossoma)
 
-        #cromossoma mais frequente entre os selecionados
-        melhorPai = max(selecionados, key=selecionados.count)
+        # seleciona os 2 melhores indivíduos da população atual (elitismo)
+        indices_ordenados = sorted(range(len(aptidoes)), key=lambda i: aptidoes[i], reverse=True)
+        melhorPai = populacao[indices_ordenados[0]]
+        segundoMelhor = populacao[indices_ordenados[1]]
 
         nova_populacao = []
         
@@ -62,9 +65,10 @@ def main():
                 nova_populacao.append(filho1)
                 nova_populacao.append(filho2)
 
-        #elitismo
-        if len(nova_populacao) > 0:
+        # elitismo: preserva os 2 melhores da geração anterior
+        if len(nova_populacao) > 1:
             nova_populacao[0] = melhorPai
+            nova_populacao[1] = segundoMelhor
 
         print(f"Geracao {count} concluida.")
         count += 1
@@ -81,15 +85,20 @@ def main():
                 melhor_cromossoma = cromossoma
                 melhorX = valorX
                 melhorY = valorY
-            if resultado == 1:
+            # usa tolerância para comparação de ponto flutuante
+            if resultado >= 0.999999:
                 print("Solução encontrada!")
-                print(f"Cromossoma: {cromossoma}, ({valorX},{valorY})")
+                print(f"Cromossoma: {cromossoma}, ({valorX},{valorY}), Resultado: {resultado}")
+                found_solution = True
+                break
 
         print(f"Melhor da geracao {count - 1}: Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
         melhores_resultados.append(melhor_resultado)
         
         # prepara próxima geração
         populacao = nova_populacao
+        if found_solution:
+            break
     print(f"\nEvolucao concluida. Melhor solucao encontrada:")
     print(f"Cromossoma: {melhor_cromossoma}, ({melhorX},{melhorY}), Resultado: {melhor_resultado}")
     
