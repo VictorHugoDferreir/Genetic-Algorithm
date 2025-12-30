@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 N = 100
 Num_ger = 100
 
-taxa_cruzamento = 0.7
+taxa_cruzamento = 0.65
 intervalo_min = -100
 intervalo_max = 100
 
